@@ -18,6 +18,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/pressly/goose/v3"
 
+
 	"github.com/joho/godotenv"
 )
 
@@ -46,7 +47,12 @@ func main() {
 	engineHandler := engineHandler.NewEngineHandler(engineService)
 
 	router := chi.NewRouter()
-
+	login.InitGoogleOauthConfig()
+	login.InitGitHubOauthConfig()
+	router.Get("/auth/google", login.GoogleLoginHandler)
+	router.Get("/auth/google/callback", login.GoogleCallbackHandler)
+	router.Get("/auth/github", login.GitHubLoginHandler)
+	router.Get("/auth/github/callback", login.GitHubCallbackHandler)
 
 	router.Post("/login", login.LoginHandler)
 	router.Get("/health", func(w http.ResponseWriter, r *http.Request) {
@@ -81,3 +87,6 @@ func main() {
 		log.Fatalf("Failed to start server: %v", err)
 	}
 }
+
+
+
