@@ -2,6 +2,9 @@ package car
 
 import (
 	"context"
+	"fmt"
+	"log"
+
 	"github.com/LikhithMar14/management/models"
 	"github.com/LikhithMar14/management/store"
 )
@@ -18,6 +21,7 @@ func NewCarService(store store.CarStoreInterface) *CarService {
 }
 
 func (s *CarService) GetCarByID(ctx context.Context, id string) (models.Car, error) {
+	log.Println("I am in car service",id)
 	car, err :=  s.store.GetCarByID(ctx, id)
 	if err != nil {
 		return models.Car{}, err
@@ -27,6 +31,9 @@ func (s *CarService) GetCarByID(ctx context.Context, id string) (models.Car, err
 
 func (s *CarService) GetCarsByBrand(ctx context.Context, brand string, isEngine bool) ([]models.Car, error) {
 	cars, err := s.store.GetCarsByBrand(ctx, brand, isEngine)
+	log.Print("Brand name in car service: " ,brand)
+	log.Print(cars)
+	log.Print(err)
 	if err != nil {
 		return []models.Car{}, err
 	}
@@ -45,9 +52,13 @@ func (s *CarService) CreateCar(ctx context.Context, car *models.CarRequest) (mod
 }
 
 func (s *CarService) UpdateCar(ctx context.Context, id string, car *models.CarRequest) (models.Car, error) {
+	fmt.Println("id in service: ",id)
 	if err := models.ValidateCarRequest(*car); err != nil {
+		fmt.Println("ERROR IN VALIDATION: ",err)
 		return models.Car{}, err
 	}
+	
+	fmt.Println("id: ",id)
 	updatedCar, err := s.store.UpdateCar(ctx, id, car)
 	if err != nil {
 		return models.Car{}, err

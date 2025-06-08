@@ -22,12 +22,12 @@ type Car struct {
 }
 
 type CarRequest struct {
-	Name      string    `json:"name"`
-	Year      string    `json:"year"`
-	Brand     string    `json:"brand"`
-	FuelType  string    `json:"fuel_type"`
-	Engine    Engine    `json:"engine"`
-	Price     float64   `json:"price"`
+	Name     string  `json:"name"`
+	Year     string  `json:"year"`
+	Brand    string  `json:"brand"`
+	FuelType string  `json:"fuel_type"`
+	Engine   Engine  `json:"engine"`
+	Price    float64 `json:"price"`
 }
 
 func ValidateCarRequest(car CarRequest) error {
@@ -44,14 +44,13 @@ func ValidateCarRequest(car CarRequest) error {
 		return err
 	}
 	if err := validateEngine(car.Engine); err != nil {
-		return err	
+		return err
 	}
 	if err := validatePrice(car.Price); err != nil {
 		return err
 	}
 	return nil
 }
-
 
 func validateName(name string) error {
 	if name == "" {
@@ -65,14 +64,15 @@ func validateYear(year string) error {
 		return errors.New("year is required")
 	}
 	if len(year) != 4 {
-		return errors.New("year must be 4 digits")
+		return errors.New("year must be exactly 4 digits")
 	}
-	value,err := strconv.Atoi(year)
+	value, err := strconv.Atoi(year)
 	if err != nil {
 		return errors.New("year must be a number")
 	}
-	if value < 1900 || value > time.Now().Year() {
-		return errors.New("year must be between 1900 and current year")
+	currentYear := time.Now().Year()
+	if value < 1900 || value > currentYear {
+		return errors.New("year must be between 1900 and the current year")
 	}
 	return nil
 }
@@ -85,25 +85,25 @@ func validateBrand(brand string) error {
 }
 
 func validateFuelType(fuelType string) error {
-	validFuelTypes := []string{"petrol", "diesel", "electric", "hybrid"}
+	validFuelTypes := []string{"petrol", "diesel", "electric", "hybrid", "Petrol", "Diesel", "Electric", "Hybrid"}
 	if slices.Contains(validFuelTypes, fuelType) {
-			return nil
-		}
-	return errors.New("fuel type must be one of the following: petrol, diesel, electric, hybrid")
+		return nil
+	}
+	return errors.New("fuel type must be one of: petrol, diesel, electric, hybrid")
 }
 
 func validateEngine(engine Engine) error {
+	if engine.EngineID == uuid.Nil {
+		return errors.New("engine ID is required")
+	}
 	if engine.Displacement <= 0 {
 		return errors.New("displacement must be greater than 0")
-	}																																																	
-	if engine.NumberOfCylinders <= 0 {
-		return errors.New("number of cylinders must be greater than 0")
-	}
-	if engine.EngineID == uuid.Nil {
-		return errors.New("engine id is required")
 	}
 	if engine.Displacement < 1000 {
-		return errors.New("displacement must be greater than 1000")
+		return errors.New("displacement must be at least 1000")
+	}
+	if engine.NumberOfCylinders <= 0 {
+		return errors.New("number of cylinders must be greater than 0")
 	}
 	if engine.CarRange <= 0 {
 		return errors.New("car range must be greater than 0")
